@@ -1,0 +1,311 @@
+---
+title: "Project Name"
+author: 
+output: "pdf_document"
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(gt)
+```
+
+```{r data clean, include=FALSE}
+survey <- read_csv(".CSV FILE PATH TO RAW SURVEY DATA") |> 
+  janitor::clean_names()
+
+#to save original column names
+questions <- colnames(survey)
+
+survey_rename <- survey |> 
+  #give columns shorter names - name order and length must match column order and length
+  `colnames<-` (c( 'zip', 'muni', 'data_format', 'sub_lang', 'date'
+                  )) |> 
+  #remove any extraneous columns
+  select(-c(date, data_format))
+```
+
+```{r variables, include=FALSE}
+#For when survey respondents are from more than one municipality
+#update muni (or geog) name below
+muni_name <- c('Gloucester')
+
+#filter to just muni you want responses for
+survey_muni <- survey_rename |> 
+  filter(muni %in% muni_name)
+
+#get total number of responses
+total_responses <- nrow(survey_muni)
+
+rm(survey_rename)
+```
+
+`r total_responses` `r muni_name` residents responded to the survey. The analysis below reflects the results of these surveys.
+
+### Section 1
+
+##### Single Select Multiple Choice Question
+```{r, echo=FALSE}
+survey_muni |> 
+  #select question/column
+  select(isp) |> 
+  #count responses
+  count(isp, name = 'count') |> 
+  #calculate %
+  mutate(percent = 100*round(count/total_responses, digits = 3)) |> 
+  #order highest to lowest
+  arrange(desc(count)) |> 
+  #make a clean table using gt
+    gt() |> 
+    cols_label(
+      #change variable name and name in *** to reflect variable being analyzed
+      isp = md("**ISP**"),
+      count = md("**Number of Respondents**"),
+      percent = md("**Percent of Respondents**")
+  )
+```
+
+##### Multi-Select Multiple Choice Question
+```{r, echo=FALSE}
+survey_muni |> 
+  #select question/column
+  select(service_type) |> 
+  #separating out responses that included multiple answer choices
+  separate_rows(service_type, sep = "(,\\b)") |> 
+  #count responses
+  count(service_type, name = 'count') |> 
+  #calculate %
+  mutate(percent = 100*round(count/total_responses, digits = 3)) |> 
+  #order highest to lowest
+  arrange(desc(count)) |> 
+   #make a clean table using gt
+    gt() |> 
+    cols_label(
+    #change variable name and name in *** to reflect variable being analyzed
+      service_type = md("**Service Type**"),
+      count = md("**Number of Respondents**"),
+      percent = md("**Percent of Respondents**")
+  )
+```
+
+
+##### How much do you pay for the internet every month?  
+
+```{r, echo=FALSE}
+ggplot(survey_muni) +
+  geom_histogram(aes(cost), binwidth = 10) +
+  xlab("Monthly Internet Cost") +
+  ylab("Number of Respondents") +
+  scale_x_continuous(breaks = seq(0, 350, 25))
+
+```
+
+
+## Section 2
+
+## Demographics
+This section hasn't been tested on the new survey questions yet
+
+##### Race and Ethnicity
+```{r, echo=FALSE}
+survey_muni |> 
+  select(race) |> 
+  #separating out responses that included multiple answer choices
+  separate_rows(race, sep = "(,\\b)") |> 
+  #count responses
+  count(race, name = 'count') |> 
+  #calculate %
+  mutate(percent = 100*round(count/total_responses, digits = 3)) |> 
+  #order higest to lowest
+  arrange(race) |> 
+    gt() |> 
+    cols_label(
+      race = md(""),
+      count = md("**Number of Respondents**"),
+      percent = md("**Percent of Respondents**")
+  )
+```
+
+##### Gender
+```{r, echo=FALSE}
+survey_muni |> 
+  count(gender, name = 'count') |> 
+  #calculate %
+  mutate(percent = 100*round(count/total_responses, digits = 3)) |> 
+  #order higest to lowest
+  arrange(gender) |> 
+    gt() |> 
+    cols_label(
+      gender = md("**Gender**"),
+      count = md("**Number of Respondents**"),
+      percent = md("**Percent of Respondents**")
+  )
+```
+
+##### Age
+```{r, echo=FALSE}
+survey_muni |> 
+  count(age, name = 'count') |> 
+  #calculate %
+  mutate(percent = 100*round(count/total_responses, digits = 3)) |> 
+  #order highest to lowest
+  arrange(age) |> 
+    gt() |> 
+    cols_label(
+      age = md(""),
+      count = md("**Number of Respondents**"),
+      percent = md("**Percent of Respondents**")
+  )
+```
+
+##### Annual household income
+```{r, echo=FALSE}
+survey_muni |> 
+  count(hh_income, name = 'count') |> 
+  #calculate %
+  mutate(percent = 100*round(count/total_responses, digits = 3)) |> 
+  #order higest to lowest
+  arrange(hh_income) |> 
+    gt() |> 
+    cols_label(
+      hh_income = md("**Annual Income**"),
+      count = md("**Number of Respondents**"),
+      percent = md("**Percent of Respondents**")
+  )
+```
+
+##### Household size
+```{r, echo=FALSE}
+survey_muni |> 
+  count(hh_size, name = 'count') |> 
+  #calculate %
+  mutate(percent = 100*round(count/total_responses, digits = 3)) |> 
+  #order higest to lowest
+  arrange(hh_size) |> 
+    gt() |> 
+    cols_label(
+      hh_size = md("**Household Size**"),
+      count = md("**Number of Respondents**"),
+      percent = md("**Percent of Respondents**")
+  )
+```
+
+##### Education level
+```{r, echo=FALSE}
+survey_muni |> 
+  count(education, name = 'count') |> 
+  #calculate %
+  mutate(percent = 100*round(count/total_responses, digits = 3)) |> 
+  #order higest to lowest
+  arrange(education) |> 
+    gt() |> 
+    cols_label(
+      education = md(""),
+      count = md("**Number of Respondents**"),
+      percent = md("**Percent of Respondents**")
+  ) |> 
+    cols_width(education ~ px(150))
+```
+
+
+##### Do you identify as a person with a disability?
+```{r, echo=FALSE}
+survey_muni |> 
+  count(disability, name = 'count') |> 
+  #calculate %
+  mutate(percent = 100*round(count/total_responses, digits = 3)) |> 
+  #order higest to lowest
+  arrange(disability) |> 
+    gt() |> 
+    cols_label(
+      disability = md(""),
+      count = md("**Number of Respondents**"),
+      percent = md("**Percent of Respondents**")
+  )
+```
+
+##### If you identify as a person with a disability, do you have difficulty in any of the following areas? (Multi-select)
+```{r, echo=FALSE}
+survey_muni |> 
+  #separating out responses that included multiple answer choices
+  separate_rows(disability_type, sep = "(,\\b)") |> 
+  count(disability_type, name = 'count') |> 
+  #calculate %
+  mutate(percent = 100*round(count/total_responses, digits = 3)) |> 
+  #order higest to lowest
+  arrange(desc(count)) |> 
+    gt() |> 
+    cols_label(
+      disability_type = md(""),
+      count = md("**Number of Respondents**"),
+      percent = md("**Percent of Respondents**")
+  ) |> 
+    cols_width(disability_type ~ px(150))
+```
+
+##### LGBTQIA
+```{r, echo=FALSE}
+survey_muni |> 
+  count(lgbtq, name = 'count') |> 
+  #calculate %
+  mutate(percent = 100*round(count/total_responses, digits = 3)) |> 
+  #order higest to lowest
+  arrange(lgbtq) |> 
+    gt() |> 
+    cols_label(
+      lgbtq = md(""),
+      count = md("**Number of Respondents**"),
+      percent = md("**Percent of Respondents**")
+  )
+```
+
+##### Veteran
+```{r, echo=FALSE}
+survey_muni |> 
+  count(veteran, name = 'count') |> 
+  #calculate %
+  mutate(percent = 100*round(count/total_responses, digits = 3)) |> 
+  #order higest to lowest
+  arrange(veteran) |> 
+    gt() |> 
+    cols_label(
+      veteran = md(""),
+      count = md("**Number of Respondents**"),
+      percent = md("**Percent of Respondents**")
+  )
+```
+
+##### Affordable housing
+```{r, echo=FALSE}
+survey_muni |> 
+  count(affordable_housing, name = 'count') |> 
+  #calculate %
+  mutate(percent = 100*round(count/total_responses, digits = 3)) |> 
+  #order higest to lowest
+  arrange(affordable_housing) |> 
+    gt() |> 
+    cols_label(
+      affordable_housing = md(""),
+      count = md("**Number of Respondents**"),
+      percent = md("**Percent of Respondents**")
+  )
+```
+
+##### Where did you hear about this survey?
+```{r, echo=FALSE}
+survey_muni |> 
+  #separating out responses that included multiple answer choices
+  separate_rows(survey_awareness, sep = "(,\\b)") |>
+  mutate(survey_awareness = str_trim(survey_awareness)) |> 
+  count(survey_awareness, name = 'count') |> 
+  #calculate %
+  mutate(percent = 100*round(count/total_responses, digits = 3)) |> 
+  #order higest to lowest
+  arrange(survey_awareness) |> 
+    gt() |> 
+    cols_label(
+      survey_awareness = md(""),
+      count = md("**Number of Respondents**"),
+      percent = md("**Percent of Respondents**")
+    ) |> 
+    cols_width(survey_awareness ~ px(150))
+```
