@@ -1,3 +1,6 @@
+#Setting variables names for database connection. Information held remotely.
+source(file = "C:/Project_Work/Local_Data/General/census.data_connection.R")
+
 #Connecting to the database to pull various datasets relevant to the context communities
 #analysis
 #Set the driver
