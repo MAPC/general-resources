@@ -1,0 +1,40 @@
+---
+title: "Template Project"
+author: "Zoe Iacovino and Alexa DeRosa"
+date: "2024-10-25"
+output: html_document
+---
+
+## Libraries and Functions
+
+```{r}
+
+source("libraries.R")
+source("functions.R")
+
+```
+
+## Defining Variables
+
+```{r}
+
+# output paths
+output_path<- paste0("C:/Users/",Sys.info()["username"],"/OneDrive - Metropolitan Area Planning Council")
+
+arc_pro_gdb<- "K:/DataServices/Projects/Current_Projects/"
+
+# geographics study area
+study_area<- arc.open("K:/DataServices/Projects/Current_Projects/")
+
+study_area<-arc.data2sf(arc.select(study_area))
+
+# municipal filtering variables
+muni_lower<- "Milford"
+
+muni_upper<- "MILFORD"
+
+muni_id_ob<- 185
+
+
+```
+
