@@ -16,7 +16,7 @@ library(data.table)
 #Spatial - some of these may require an ArcPro installation on your machine to run
 library(arcgis)
 library(arcgisbinding) # install instructions in readme here: https://github.com/R-ArcGIS/r-bridge 
- arc.check_product()
+ arc.check_product() # if you get an error message that this failed, you need to open your ArcPro Install, log-in, and then restart your R session before trying to load the library again
  arc.check_portal()
 library(tidygeocoder)
 library(nngeo)
