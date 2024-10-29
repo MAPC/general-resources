@@ -13,9 +13,9 @@ library(rio)
 library(openxlsx)
 library(data.table)
 
-#Spatial
+#Spatial - some of these may require an ArcPro installation on your machine to run
 library(arcgis)
-library(arcgisbinding)
+library(arcgisbinding) # install instructions in readme here: https://github.com/R-ArcGIS/r-bridge 
  arc.check_product()
  arc.check_portal()
 library(tidygeocoder)
