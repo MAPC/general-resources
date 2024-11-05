@@ -19,6 +19,22 @@ geolocate <- function(points_sf, polygons, polygon_field) {
   tmp <- points_sf |> 
     #setting crs to match polygon shapefile
     st_transform(mass_mainland, crs = st_crs(polygons)) |> 
+    #polygon_field can be one field you want to add or a list of fields
     st_join(select(polygons, polygon_field, geometry)) 
   return(tmp)
+}
+
+# function to find the coordinates of any records missing coordinate data
+geocoder <- function(df) {
+  tmp1 <- df |> 
+    filter(is.na(latitude)) |> 
+    geocode(geo_addr, method = 'arcgis', lat = lat, long = long)
+  tmp2 <- df |> 
+    filter(!is.na(latitude)) |> 
+    mutate(
+      lat = latitude,
+      long = longitude
+    )
+  geocoded <- bind_rows(tmp1, tmp2) |> 
+    select(-c(latitude, longitude))
 }
