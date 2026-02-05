@@ -8,7 +8,8 @@ output: html_document
 ## Libraries and Functions
 
 ```{r}
-
+# syntax needed: 
+#here(general_resources) 
 source("libraries.R")
 source("functions.R")
 
