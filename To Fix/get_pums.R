@@ -193,7 +193,15 @@ mapc_pums_cleaning<-function(vintage_year, addl_vars = c()){
 
 #' PUMS Margin of Error (MOE) Calculator
 #'
-#' @returns
+#' @param df description
+#' @param weight description
+#' @param repweight_list description
+#' @param grp_var description
+#' @param totals_cols description
+#' @param median_cols description
+#'
+#' @returns Table with sample estimates and margins of error.
+#' 
 #' @export
 #'
 #' @examples
@@ -212,8 +220,11 @@ pums_moe <- function(df, weight, repweight_list, grp_var, totals_cols, median_co
     summarize(
       across(.cols = totals_cols, ~survey_total),
       across(.cols = median_cols, ~survey_median),
+    )|>
+    mutate(
+      across(.cols = endsWith("se"), .fns = ~function(x) {round(x *1.64)}, .names = '{.cols}_moe')
     )
 
-  return()  
+  return(srvy.tbl)  
   
 }
