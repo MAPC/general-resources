@@ -218,12 +218,15 @@ pums_moe <- function(df, weight, repweight_list, grp_var, totals_cols, median_co
   srvy.tbl <- tmp_srvy.obj |> 
     group_by({{grp_var}}) |> 
     summarize(
-      across(.cols = totals_cols, ~survey_total),
-      across(.cols = median_cols, ~survey_median),
+      #across(.cols = totals_cols, ~survey_total),
+      across(.cols = median_cols, ~survey_median(.)),
     )|>
     mutate(
-      across(.cols = endsWith("se"), .fns = ~function(x) {round(x *1.64)}, .names = '{.cols}_moe')
-    )
+      across(.cols = ends_with("se"), .fns = ~round(.*1.64))
+    )|>
+    dplyr::rename_with(~stringr::str_replace("_se", "_moe"))
+  #rename_at(vars(names(select(., ends_with("se"))))~ vars(names(select(., ends_with("se"))|>
+  #str_replace("se", "moe"))))
 
   return(srvy.tbl)  
   
