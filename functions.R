@@ -2,6 +2,23 @@
 
 #Functions (By Alexa)
 
+# function to find the coordinates of any records missing coordinate data 
+# add lat/long == 0 to first tmp
+geocoder <- function(df) {
+  tmp1 <- df |> 
+    filter(is.na(latitude)) |> 
+    geocode(geo_addr, method = 'arcgis', lat = lat, long = long)
+  tmp2 <- df |> 
+    filter(!is.na(latitude)) |> 
+    mutate(
+      lat = latitude,
+      long = longitude
+    )
+  geocoded <- bind_rows(tmp1, tmp2) |> 
+    select(-c(latitude, longitude))
+}
+
+# add an if else so that if there is missing lat long it doesn't geocode or a y/n do you want to run anyways?
 make_spatial <- function(points, lat, long) {
   print(paste0("There are ", nrow(filter(points, !complete.cases(lat, long))), " rows with incomplete coordinates"))
   #lat_lon_CRS <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
@@ -24,17 +41,4 @@ geolocate <- function(points_sf, polygons, polygon_field) {
   return(tmp)
 }
 
-# function to find the coordinates of any records missing coordinate data
-geocoder <- function(df) {
-  tmp1 <- df |> 
-    filter(is.na(latitude)) |> 
-    geocode(geo_addr, method = 'arcgis', lat = lat, long = long)
-  tmp2 <- df |> 
-    filter(!is.na(latitude)) |> 
-    mutate(
-      lat = latitude,
-      long = longitude
-    )
-  geocoded <- bind_rows(tmp1, tmp2) |> 
-    select(-c(latitude, longitude))
-}
+
