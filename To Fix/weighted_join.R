@@ -37,7 +37,7 @@ weighted_join<-function(target_layer, target_id, sum_layer, sum_data, join_field
   
   # consolidate the intersected geometry to the target layer geometry
   target_layer_sum<-intersect_stage |>
-    group_by({{target_id}})|>
+    group_by({{target_id}})|> # double curly brackets let you add a function parameter in a tidyselect!
     summarize(across(where(is.numeric), ~sum(., na.rm = T)))
   
   return(target_layer_sum)                
