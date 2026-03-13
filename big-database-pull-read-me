@@ -1,0 +1,25 @@
+Zoe Iacovino has created a data pull script that interacts with an airtable to speed up the time needed to pull data. The work was devised for HNA data
+pulls but can be used for any plan type.
+
+For planners:
+The planners who are interested in the data need to fill out the airtable indicating what tables, years, and context communities they want data for. Make sure
+that the year formatting matches the way the years are displayed on DataCommon in the table you are requesting.
+
+For analysts:
+Once the planner has completed the airtable, you can download the table view from airtable and plug it into the script. To run the script you will need to 
+update:
+- path to airtable .csv download
+- HNA community
+- list of context communities
+- output path for where planners want the final excel output to be saved
+
+Output: An excel workbook with one tab per table where the tabs are named after the table names and each table has the clean field names from the metadata
+and not variable names.
+
+Example airtable: https://airtable.com/applSMFuPHQLX6joO/tblhd0UzkWdzzLiXs/viwHtrskUebE00BNh?blocks=hide 
+Link to script: 
+
+Future to dos:
+- add script to general resources GitHub and include link above
+- create a template airtable base with one tab per plan type this has been completed so folks have a list of datasets to start from based on decisions from 
+past plans (this would also be a great head start for the DataCommon plan type work)
