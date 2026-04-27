@@ -1,5 +1,7 @@
 # Script to create shapefiles from census tables
 
+## this is not finished!!!
+
 library(tidyverse)
 library(mapcdatakeys)
 library(httr2)
