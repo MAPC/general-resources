@@ -6,6 +6,7 @@ library(tidyverse)
 library(mapcdatakeys)
 library(httr2)
 library(sf)
+library(jsonlite)
 
 # function to make a shapefile from a DataCommon table
 
@@ -34,7 +35,8 @@ dc_acs_pull <- function(table_name, format=NULL, years, metadata=NULL, geography
       select(muni_name, geometry)
   } else if (geography == 'ct') {
     shp <- tract_sf(2020) |> 
-      select(ct20_id, muni_name, geometry)
+      select(ct20_id, muni_name, geometry) |> 
+      mutate(ct20_id = as.character(ct20_id))
   } else if(geography == 'bg'){
     shp <- block_sf(2020)
   }
@@ -45,24 +47,24 @@ dc_acs_pull <- function(table_name, format=NULL, years, metadata=NULL, geography
   schema = 'tabular'
   
   #define default variables
-  if (missing(format)) {format = '.csv'}
+  if (missing(format)) {format = 'csv'}
   if (missing(metadata)) {metadata = 'false'}
   
   #build api path
-  base_url = "https://staging.datacommon-react.mapc.org/api/"
-  endpoint_url = paste0("/export?",
+  base_url = "https://staging.datacommon-react.mapc.org/api/export?"
+  endpoint_url = paste0(
               "token=", token,
               "&database=",database, 
               "&schema=", schema,
               "&table=",table_name,
-               "&format=",format,
-               "&years=",year,
-               "&useMetadataColumns=",metadata
+              "&format=",format,
+              "&years=",year,
+              "&useMetadataColumns=",metadata
                ) 
   
-  
   #get table
-  table = request(paste0(base_url, endpoint_url))
+  table = read_csv(paste0(base_url, endpoint_url)) |> 
+    mutate(ct20_id = as.character(ct20_id))
   
   #join table and shapefile
   table_shp <- left_join(table, shp) 
@@ -70,8 +72,9 @@ dc_acs_pull <- function(table_name, format=NULL, years, metadata=NULL, geography
 }
 
 #Race
-race <- dc_acs_pull('b03002_race_ethnicity_acs_ct', '2020-24', geography = 'ct')
-
+race <- dc_acs_pull('b03002_race_ethnicity_acs_ct', '2020-24', geography = 'ct', format='csv', metadata = 'false')
+test <- read.csv("https://datacommon.mapc.org/api?token=datacommon&database=ds&schema=tabular&table=b19301_per_capita_income_acs_m")
+test<- 
 
 # what works for now
 race <- read_csv("https://staging.datacommon-react.mapc.org/api/export?token=datacommon&database=ds&schema=tabular&table=b03002_race_ethnicity_acs_ct&format=csv&useMetadataColumns=false")
